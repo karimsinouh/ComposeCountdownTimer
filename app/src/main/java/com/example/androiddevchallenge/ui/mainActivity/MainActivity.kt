@@ -20,6 +20,9 @@ import android.os.CountDownTimer
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.animation.*
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -32,10 +35,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.androiddevchallenge.ui.composable.Congratulations
 import com.example.androiddevchallenge.ui.composable.CustomTimer
 import com.example.androiddevchallenge.ui.theme.MyTheme
-import com.example.androiddevchallenge.ui.theme.yellow500
 import com.example.androiddevchallenge.util.MillisConverter
 
 class MainActivity : AppCompatActivity() {
@@ -43,17 +47,18 @@ class MainActivity : AppCompatActivity() {
     private val vm by viewModels<MainViewModel>()
     private lateinit var timer:CountDownTimer
 
+    @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MyTheme {
-                MyApp(
-                    vm,
-                    onPlay = {play()},
-                    onPause = {pause()},
-                    onCancel = {cancel()},
-                )
-            }
+
+            MyApp(
+                vm,
+                onPlay = {play()},
+                onPause = {pause()},
+                onCancel = {cancel()},
+            )
+
         }
 
 
@@ -93,6 +98,7 @@ class MainActivity : AppCompatActivity() {
 }
 
 // Start building your app here!
+@ExperimentalAnimationApi
 @Composable
 fun MyApp(
     vm:MainViewModel,
@@ -102,55 +108,79 @@ fun MyApp(
     ) {
 
 
-    MyTheme {
+    MyTheme() {
 
         val progress by vm.progress.observeAsState()
         val millis by vm.millis.observeAsState()
         val isPaused by vm.isPaused.observeAsState()
-
+        val isFinished by vm.isFinished.observeAsState()
 
         val millisToText=MillisConverter.convert(millis ?:0)
+        val animatedProgress= animateFloatAsState(targetValue = progress!!).value
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxSize()
+
+
+        if(isFinished!!){
+
+            //show the congratulations screen
+            AnimatedVisibility(
+                visible = isFinished!!,
+                enter = fadeIn(),
+                exit = fadeOut()
             ) {
-
-            CustomTimer(
-                text = millisToText,
-                progress = progress!!,
-                onScroll = {
-                    vm.increaseMillisBy(it)
-                    vm.changeProgress(1F)
-                },
-                scrollEnabled = isPaused!! && millis!! >= 0
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.padding(12.dp)
-            ) {
-
-                if (isPaused!!)
-                    //play button
-                    IconButton(onClick = { onPlay() }) {
-                        Icon(imageVector = Icons.Rounded.PlayArrow, contentDescription = "")
-                    }
-                else
-                    //pause button
-                    IconButton(onClick = { onPause() }) {
-                        Icon(imageVector = Icons.Rounded.Pause, contentDescription = "")
-                    }
-
-                if (progress!!<1)
-                    //cancel button
-                    IconButton(onClick = { onCancel() }) {
-                        Icon(imageVector = Icons.Rounded.Cancel, contentDescription = "")
-                    }
-
+                Congratulations(onClick = {
+                    vm.setIsFinished(false)
+                })
             }
+
+        }else{
+
+            //show the timer
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+
+                CustomTimer(
+                    text = millisToText,
+                    progress = animatedProgress,
+                    onScroll = {
+                        vm.increaseMillisBy(it)
+                        vm.changeProgress(1F)
+                    },
+                    scrollEnabled = isPaused!! && millis!! >= 0
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.padding(12.dp)
+                ) {
+
+                    if (isPaused!!)
+                        //play button
+                            IconButton(onClick = { onPlay() }) {
+                                Icon(imageVector = Icons.Rounded.PlayArrow, contentDescription = "")
+                            }
+                    else
+                        //pause button
+                            IconButton(onClick = { onPause() }) {
+                                Icon(imageVector = Icons.Rounded.Pause, contentDescription = "")
+                            }
+
+                    if (progress!!<1)
+                        //cancel button
+                            IconButton(onClick = { onCancel() }) {
+                                Icon(imageVector = Icons.Rounded.Cancel, contentDescription = "")
+                            }
+
+                }
+            }
+
+
         }
+
+
 
     }
 }

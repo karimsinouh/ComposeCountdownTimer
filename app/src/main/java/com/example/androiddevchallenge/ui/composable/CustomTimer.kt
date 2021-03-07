@@ -6,14 +6,13 @@ import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.androiddevchallenge.ui.theme.white
-import com.example.androiddevchallenge.ui.theme.yellow700
 
 @Composable
 fun CustomTimer(
@@ -42,7 +41,7 @@ fun CustomTimer(
             progress = progress,
             Modifier.size(200.dp),
             strokeWidth = 12.dp,
-            color = yellow700
+            color = MaterialTheme.colors.primary
             )
         Text(text,fontSize = 32.sp)
     }

@@ -9,7 +9,7 @@ class MainViewModel:ViewModel() {
     private val _progress= MutableLiveData(1F)
     private val _millis=MutableLiveData(10000L)
     private val _isPaused=MutableLiveData(true)
-
+    private val _isFinished=MutableLiveData(false)
     //used to calculate how many millis are left (_tempMillis - _millis) to change the progress
     private val _tempMillis=MutableLiveData(10000L)
 
@@ -17,6 +17,7 @@ class MainViewModel:ViewModel() {
     val millis:LiveData<Long> = _millis
     val isPaused:LiveData<Boolean> = _isPaused
     val tempMillis:LiveData<Long> = _tempMillis
+    val isFinished:LiveData<Boolean> = _isFinished
 
 
     fun changeProgress(value:Float){
@@ -37,6 +38,7 @@ class MainViewModel:ViewModel() {
     }
 
     fun onFinish() {
+        setIsFinished(true)
         setMillis(_tempMillis.value!!)
         _isPaused.value=true
         changeProgress(1F)
@@ -52,6 +54,11 @@ class MainViewModel:ViewModel() {
             setTempMillis(millis.value?:0)
 
         _isPaused.value=false
+        _isFinished.value=false
+    }
+
+    fun setIsFinished(finished:Boolean){
+        _isFinished.value=finished
     }
 
 
