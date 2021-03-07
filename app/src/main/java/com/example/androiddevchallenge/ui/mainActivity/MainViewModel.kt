@@ -6,22 +6,53 @@ import androidx.lifecycle.ViewModel
 
 class MainViewModel:ViewModel() {
 
-    private val _progress= MutableLiveData<Float>(1F)
-    private val _millis=MutableLiveData<Long>(6000)
+    private val _progress= MutableLiveData(1F)
+    private val _millis=MutableLiveData(10000L)
+    private val _isPaused=MutableLiveData(true)
+
+    //used to calculate how many millis are left (_tempMillis - _millis) to change the progress
+    private val _tempMillis=MutableLiveData(10000L)
 
     val progress:LiveData<Float> = _progress
     val millis:LiveData<Long> = _millis
+    val isPaused:LiveData<Boolean> = _isPaused
+    val tempMillis:LiveData<Long> = _tempMillis
+
 
     fun changeProgress(value:Float){
         _progress.value=value
     }
 
-    fun decreaseMillisBy(value:Long){
-        _millis.value = _millis.value?.plus(value*10)
-
+    //this one is only used by the user
+    fun increaseMillisBy(value:Long){
+        setMillis(_millis.value?.plus(value*10)!!)
     }
 
+    fun setMillis(value:Long){
+        _millis.value = value
+    }
 
+    private fun setTempMillis(value:Long){
+        _tempMillis.value=value
+    }
+
+    fun onFinish() {
+        setMillis(_tempMillis.value!!)
+        _isPaused.value=true
+        changeProgress(1F)
+    }
+
+    fun onPause(){
+        _isPaused.value=true
+    }
+
+    fun onPlay(){
+
+        if(progress.value!! >=1f)
+            setTempMillis(millis.value?:0)
+
+        _isPaused.value=false
+    }
 
 
 }

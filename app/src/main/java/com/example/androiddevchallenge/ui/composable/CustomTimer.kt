@@ -12,11 +12,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.androiddevchallenge.ui.theme.white
+import com.example.androiddevchallenge.ui.theme.yellow700
 
 @Composable
 fun CustomTimer(
     text:String,
     progress:Float,
+    scrollEnabled:Boolean?,
     onScroll:(Long)->Unit,
 ){
 
@@ -25,7 +28,8 @@ fun CustomTimer(
             .scrollable(
                 orientation = Orientation.Vertical,
                 state = ScrollableState {
-                    onScroll(it.toLong())
+                    if(scrollEnabled!!)
+                        onScroll(it.toLong())
                     it
                 }
             )
@@ -34,7 +38,12 @@ fun CustomTimer(
         modifier = boxModifier,
         contentAlignment = Alignment.Center
     ){
-        CircularProgressIndicator(progress = progress,Modifier.size(200.dp),strokeWidth = 8.dp)
+        CircularProgressIndicator(
+            progress = progress,
+            Modifier.size(200.dp),
+            strokeWidth = 12.dp,
+            color = yellow700
+            )
         Text(text,fontSize = 32.sp)
     }
 }
