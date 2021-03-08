@@ -16,9 +16,9 @@ object MillisConverter {
 
             val seconds=TimeUnit.MILLISECONDS.toSeconds(milliseconds)
 
-            return "${if (hours<9) "0" else ""}$hours:"+
-                    "${if (minutes<9) "0" else ""}$minutes:"+
-                    "${if (seconds<9) "0" else ""}$seconds"
+            return "${if (hours<10) "0" else ""}$hours:"+
+                    "${if (minutes<10) "0" else ""}$minutes:"+
+                    "${if (seconds<10) "0" else ""}$seconds"
         }
 
 }
