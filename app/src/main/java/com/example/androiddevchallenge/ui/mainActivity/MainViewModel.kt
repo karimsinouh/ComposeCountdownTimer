@@ -27,9 +27,10 @@ class MainViewModel:ViewModel() {
     //this one is only used by the user
     fun increaseMillisBy(value:Long){
         _millis.value.let {
-            if (it?.minus(value)!! >= 0){
+            if (it?.plus(value)!! >= 0 || it.minus(value) >= 0)
                 setMillis(_millis.value?.plus(value*10)!!)
-            }
+            else
+                setMillis(0)
         }
     }
 
@@ -41,8 +42,10 @@ class MainViewModel:ViewModel() {
         _tempMillis.value=value
     }
 
-    fun onFinish() {
-        setIsFinished(true)
+    fun onFinish(isCancelled:Boolean?=false) {
+        if (!isCancelled!!)
+            setIsFinished(true)
+
         setMillis(_tempMillis.value!!)
         _isPaused.value=true
         changeProgress(1F)

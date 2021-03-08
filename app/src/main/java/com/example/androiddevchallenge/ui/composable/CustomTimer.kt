@@ -27,8 +27,7 @@ fun CustomTimer(
             .scrollable(
                 orientation = Orientation.Vertical,
                 state = ScrollableState {
-                    if(scrollEnabled!!)
-                        onScroll(it.toLong())
+                    if(scrollEnabled!!) onScroll(it.toLong())
                     it
                 }
             )

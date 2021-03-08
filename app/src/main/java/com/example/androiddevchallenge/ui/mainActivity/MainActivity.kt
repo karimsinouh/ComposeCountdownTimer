@@ -23,7 +23,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -33,12 +32,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import com.example.androiddevchallenge.ui.composable.Congratulations
 import com.example.androiddevchallenge.ui.composable.CustomScreen
 import com.example.androiddevchallenge.ui.composable.CustomTimer
 import com.example.androiddevchallenge.ui.theme.MyTheme
+import com.example.androiddevchallenge.ui.theme.teal200
 import com.example.androiddevchallenge.ui.theme.white
 import com.example.androiddevchallenge.util.MillisConverter
 
@@ -50,18 +48,15 @@ class MainActivity : AppCompatActivity() {
     @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
 
+        setContent {
             MyApp(
                 vm,
                 onPlay = {play()},
                 onPause = {pause()},
                 onCancel = {cancel()},
             )
-
         }
-
-
     }
 
     private fun play(){
@@ -92,7 +87,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun cancel(){
         timer.cancel()
-        vm.onFinish()
+        vm.onFinish(true)
     }
 
 }
@@ -116,7 +111,7 @@ fun MyApp(
         val isFinished by vm.isFinished.observeAsState()
 
         val millisToText=MillisConverter.convert(millis ?:0)
-        val animatedProgress= animateFloatAsState(targetValue = progress!!).value
+        val animatedProgress= animateFloatAsState(targetValue = progress!!,ProgressIndicatorDefaults.ProgressAnimationSpec).value
 
 
             CustomScreen(
@@ -157,18 +152,18 @@ fun MyApp(
                     if (isPaused!!)
                     //play button
                         FloatingActionButton(onClick = { onPlay() },backgroundColor = white) {
-                            Icon(imageVector = Icons.Rounded.PlayArrow, contentDescription = "")
+                            Icon(imageVector = Icons.Rounded.PlayArrow, contentDescription = "",tint = teal200)
                         }
                     else
                     //pause button
                         FloatingActionButton(onClick = { onPause() },backgroundColor = white) {
-                            Icon(imageVector = Icons.Rounded.Pause, contentDescription = "")
+                            Icon(imageVector = Icons.Rounded.Pause, contentDescription = "",tint = teal200)
                         }
 
                     if (progress!!<1)
                     //cancel button
                         FloatingActionButton(onClick = { onCancel() },backgroundColor = white) {
-                            Icon(imageVector = Icons.Rounded.Stop, contentDescription = "")
+                            Icon(imageVector = Icons.Rounded.Stop, contentDescription = "",tint = teal200)
                         }
 
                 }
