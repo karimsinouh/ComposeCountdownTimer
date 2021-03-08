@@ -7,6 +7,7 @@
 
 ## :scroll: Description
 simple countdown timer app built by the new Jetpack Compose.
+(I don't know why it shows build failing, but it wotks)
 
 ## :camera_flash: Screenshots
 <!-- You can add more screenshots here if you like -->
