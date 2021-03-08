@@ -26,7 +26,11 @@ class MainViewModel:ViewModel() {
 
     //this one is only used by the user
     fun increaseMillisBy(value:Long){
-        setMillis(_millis.value?.plus(value*10)!!)
+        _millis.value.let {
+            if (it?.minus(value)!! >= 0){
+                setMillis(_millis.value?.plus(value*10)!!)
+            }
+        }
     }
 
     fun setMillis(value:Long){
