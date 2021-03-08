@@ -27,9 +27,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Cancel
-import androidx.compose.material.icons.rounded.Pause
-import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -38,8 +36,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.androiddevchallenge.ui.composable.Congratulations
+import com.example.androiddevchallenge.ui.composable.CustomScreen
 import com.example.androiddevchallenge.ui.composable.CustomTimer
 import com.example.androiddevchallenge.ui.theme.MyTheme
+import com.example.androiddevchallenge.ui.theme.white
 import com.example.androiddevchallenge.util.MillisConverter
 
 class MainActivity : AppCompatActivity() {
@@ -108,7 +108,7 @@ fun MyApp(
     ) {
 
 
-    MyTheme() {
+    MyTheme {
 
         val progress by vm.progress.observeAsState()
         val millis by vm.millis.observeAsState()
@@ -119,68 +119,59 @@ fun MyApp(
         val animatedProgress= animateFloatAsState(targetValue = progress!!).value
 
 
+            CustomScreen(
+                content = {
 
-        if(isFinished!!){
+                    if(isFinished!!)
+                    //show the congratulations screen
+                        AnimatedVisibility(
+                            visible = isFinished!!,
+                            enter = fadeIn(),
+                            exit = fadeOut()
+                        ) {
+                            Congratulations(onClick = {
+                                vm.setIsFinished(false)
+                            })
+                        }
+                    else
+                    //show the timer
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
 
-            //show the congratulations screen
-            AnimatedVisibility(
-                visible = isFinished!!,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                Congratulations(onClick = {
-                    vm.setIsFinished(false)
-                })
-            }
+                            CustomTimer(
+                                text = millisToText,
+                                progress = animatedProgress,
+                                onScroll = {
+                                    vm.increaseMillisBy(it)
+                                    vm.changeProgress(1F)
+                                },
+                                scrollEnabled = isPaused!!
+                            )}
+                },
+                buttons = {
 
-        }else{
-
-            //show the timer
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxSize()
-            ) {
-
-                CustomTimer(
-                    text = millisToText,
-                    progress = animatedProgress,
-                    onScroll = {
-                        vm.increaseMillisBy(it)
-                        vm.changeProgress(1F)
-                    },
-                    scrollEnabled = isPaused!! && millis!! >= 0
-                )
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.padding(12.dp)
-                ) {
 
                     if (isPaused!!)
-                        //play button
-                            IconButton(onClick = { onPlay() }) {
-                                Icon(imageVector = Icons.Rounded.PlayArrow, contentDescription = "")
-                            }
+                    //play button
+                        FloatingActionButton(onClick = { onPlay() },backgroundColor = white) {
+                            Icon(imageVector = Icons.Rounded.PlayArrow, contentDescription = "")
+                        }
                     else
-                        //pause button
-                            IconButton(onClick = { onPause() }) {
-                                Icon(imageVector = Icons.Rounded.Pause, contentDescription = "")
-                            }
+                    //pause button
+                        FloatingActionButton(onClick = { onPause() },backgroundColor = white) {
+                            Icon(imageVector = Icons.Rounded.Pause, contentDescription = "")
+                        }
 
                     if (progress!!<1)
-                        //cancel button
-                            IconButton(onClick = { onCancel() }) {
-                                Icon(imageVector = Icons.Rounded.Cancel, contentDescription = "")
-                            }
+                    //cancel button
+                        FloatingActionButton(onClick = { onCancel() },backgroundColor = white) {
+                            Icon(imageVector = Icons.Rounded.Stop, contentDescription = "")
+                        }
 
                 }
-            }
+            ) }
 
-
-        }
-
-
-
-    }
 }
